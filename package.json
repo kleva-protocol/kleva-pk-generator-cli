@@ -1,6 +1,6 @@
 {
   "name": "kleva-pk-generator-cli",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "Minimalistic boilerplate to quick-start Node.js development in TypeScript.",
   "type": "commonjs",
   "engines": {
@@ -34,7 +34,7 @@
   "license": "Apache-2.0",
   "dependencies": {
     "readline-sync": "^1.4.10",
-    "sss-pk-generator": "^0.2.3",
+    "sss-pk-generator": "^0.2.4",
     "tslib": "~2.3.1"
   },
   "volta": {
