@@ -2,8 +2,11 @@
 
 ### 1. install
 `npm install`
-### 2. generate key store
+### 2. compile
+`npm run build:release`
+### 3. generate key store
 `npm run generate`
 keystore file will be generated in the project root path.
-### 3. test decryption
+### 4. test decryption
 `npm run decrypt`
+just testing purpose. private key can be shown in the terminal..

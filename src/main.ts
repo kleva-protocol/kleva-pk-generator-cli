@@ -5,12 +5,20 @@ import { writeFileSync } from 'fs';
 
 const readlineSync = require('readline-sync');
 
-const _jsonKeyStringBuilder = (address: string, shares: string[]) => {
+const _jsonKeyStringBuilder = (address: string, params: string) => {
+  const jsonParams: {
+    ct: string;
+    iv: string;
+    s: string;
+  } = JSON.parse(params);
+
   return `{
   "address": "${address}",
-  "shares": [
-    ${shares.join(',')}
-  ]
+  "params": {
+    "ct": "${jsonParams.ct}",
+    "iv": "${jsonParams.iv}",
+    "s": "${jsonParams.s}"
+  }
 }`;
 };
 
@@ -71,14 +79,18 @@ const generateKeyStore = (dir = './') => {
 
   const res = generateKey(secrets, T);
 
-  const filename = `keystore-${res.address}.json`;
-  const path = resolve(cwd(), dir, filename);
+  const path: string[] = [];
+  for (let i = 0; i < N; i++) {
+    const filename = `keystore-${i + 1}of${N}-${res.address}.json`;
+    const keystorePath = resolve(cwd(), dir, filename);
+    const keystoreJson = _jsonKeyStringBuilder(
+      res.address,
+      res.shares[i].cipherparams,
+    );
+    _makeNodeJsonFile(keystorePath, keystoreJson);
 
-  const keystoreJson = _jsonKeyStringBuilder(
-    res.address,
-    res.shares.map((s) => s.cipherparams.toString()),
-  );
-  _makeNodeJsonFile(path, keystoreJson);
+    path.push(keystorePath);
+  }
 
   return {
     address: res.address,

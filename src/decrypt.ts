@@ -1,55 +1,68 @@
-import { generateKey, unlockShares } from 'sss-pk-generator';
-import { cwd } from 'process';
-import { resolve } from 'path';
-import { existsSync, readFileSync, writeFileSync } from 'fs';
+import { unlockShares } from 'sss-pk-generator';
+import { existsSync, readFileSync } from 'fs';
 
 const readlineSync = require('readline-sync');
 
 const unlockKeyStore = () => {
-  let keystorePath = '';
   const secrets: string[] = [];
-
-  let json: {
-    address: string;
-    shares: { ct: string; iv: string; s: string }[];
-  };
+  const cipherparams: { ct: string; iv: string; s: string }[] = [];
 
   while (true) {
     let ans = '';
+    let json: {
+      address: string;
+      params: { ct: string; iv: string; s: string };
+    };
 
-    if (keystorePath === '') {
-      ans = readlineSync.question('input path of key store json:');
-      if (existsSync(ans)) {
-        keystorePath = ans;
+    ans = readlineSync.question(
+      `[${secrets.length + 1}] input path of key store json(or ENTER to exit):`,
+    );
+    ans = (ans || '').trim();
 
-        json = JSON.parse(readFileSync(keystorePath).toString());
-      }
-    } else if (secrets.length === 0) {
-      while (secrets.length < json.shares.length) {
-        ans = readlineSync.question(
-          `input path of key store json for #${
-            secrets.length + 1
-          } share(input enter to skip):`,
-          {
-            hideEchoBack: true,
-          },
-        );
+    if (ans === '') {
+      console.log('end of shares');
+      break;
+    } else if (existsSync(ans)) {
+      json = JSON.parse(readFileSync(ans).toString());
 
-        secrets.push(ans);
+      if (
+        json?.address &&
+        json?.params?.ct &&
+        json?.params?.iv &&
+        json?.params?.s
+      ) {
+        let passphrase = readlineSync.question('input the passphrase:');
+        passphrase = (passphrase || '').trim();
+        cipherparams.push(json.params);
+        secrets.push(passphrase);
+        console.log('\n');
+      } else {
+        console.log('@ERR: not valid key store structrue');
       }
     } else {
-      break;
+      console.log('@ERR: not valid path');
     }
   }
 
+  console.log('\n the number of shares you filled:', secrets.length);
+
+  console.log(
+    '@@@@@@@@@@@@@@@@@@@@@@@@@@@\n',
+    secrets.map((s, idx) => ({
+      cipherparams: cipherparams[idx],
+      secret: s,
+    })),
+    '\n@@@@@@@@@@@@@@@@@@@@@@@@@@@\n',
+  );
+
   const pk = unlockShares(
-    json.shares.map((s, idx) => ({
-      cipherparams: s,
-      secret: secrets[idx],
+    secrets.map((s, idx) => ({
+      cipherparams: cipherparams[idx],
+      secret: s,
     })),
   );
 
-  console.log('\nprivate key =>', pk);
+  console.log('\n(just for checking) private key =>', pk);
 };
 
 unlockKeyStore();
