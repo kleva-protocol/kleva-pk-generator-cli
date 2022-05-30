@@ -1,4 +1,4 @@
-import { unlockShares } from 'sss-pk-generator';
+import { privateKeyToAddress, unlockShares } from 'sss-pk-generator';
 import { existsSync, readFileSync } from 'fs';
 
 const readlineSync = require('readline-sync');
@@ -46,15 +46,6 @@ const unlockKeyStore = () => {
 
   console.log('\n the number of shares you filled:', secrets.length);
 
-  console.log(
-    '@@@@@@@@@@@@@@@@@@@@@@@@@@@\n',
-    secrets.map((s, idx) => ({
-      cipherparams: cipherparams[idx],
-      secret: s,
-    })),
-    '\n@@@@@@@@@@@@@@@@@@@@@@@@@@@\n',
-  );
-
   const pk = unlockShares(
     secrets.map((s, idx) => ({
       cipherparams: cipherparams[idx],
@@ -63,6 +54,12 @@ const unlockKeyStore = () => {
   );
 
   console.log('\n(just for checking) private key =>', pk);
+  console.log(
+    'and the address for the pk is',
+    privateKeyToAddress(pk),
+    '\n[finished]',
+    '\n\n',
+  );
 };
 
 unlockKeyStore();
