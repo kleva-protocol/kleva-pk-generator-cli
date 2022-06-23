@@ -3,7 +3,7 @@ import { existsSync, readFileSync } from 'fs';
 
 const readlineSync = require('readline-sync');
 
-const unlockKeyStore = () => {
+export const unlockKeyStore = (options: { hidePk: boolean }) => {
   const secrets: string[] = [];
   const cipherparams: { ct: string; iv: string; s: string }[] = [];
 
@@ -55,13 +55,19 @@ const unlockKeyStore = () => {
     })),
   );
 
-  console.log('\n(just for checking) private key =>', pk);
+  if (options.hidePk === false) {
+    console.log('\n(just for checking) private key =>', pk);
+  }
+  const address = privateKeyToAddress(pk);
   console.log(
     'and the address for the pk is',
     privateKeyToAddress(pk),
     '\n[finished]',
     '\n\n',
   );
-};
 
-unlockKeyStore();
+  return {
+    address,
+    pk,
+  };
+};

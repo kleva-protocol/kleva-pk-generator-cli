@@ -1,6 +1,6 @@
 {
   "name": "kleva-pk-generator-cli",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "Minimalistic boilerplate to quick-start Node.js development in TypeScript.",
   "type": "commonjs",
   "engines": {
@@ -22,8 +22,9 @@
     "typescript": "~4.6"
   },
   "scripts": {
-    "generate": "node build/src/main.js",
-    "decrypt": "node build/src/decrypt.js",
+    "generate": "node build/src/main.js generate",
+    "regenerate": "node build/src/main.js regenerate",
+    "decrypt": "node build/src/main.js decrypt",
     "clean": "rimraf coverage build tmp",
     "prebuild": "npm run lint",
     "build:watch": "tsc -w -p tsconfig.json",
@@ -34,7 +35,7 @@
   "license": "Apache-2.0",
   "dependencies": {
     "readline-sync": "^1.4.10",
-    "sss-pk-generator": "^0.2.5",
+    "sss-pk-generator": "0.2.8",
     "tslib": "~2.3.1"
   },
   "volta": {
