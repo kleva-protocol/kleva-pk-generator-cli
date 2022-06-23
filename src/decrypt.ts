@@ -31,7 +31,9 @@ const unlockKeyStore = () => {
         json?.params?.iv &&
         json?.params?.s
       ) {
-        let passphrase = readlineSync.question('input the passphrase:');
+        let passphrase = readlineSync.question('input the passphrase:', {
+          hideEchoBack: true,
+        });
         passphrase = (passphrase || '').trim();
         cipherparams.push(json.params);
         secrets.push(passphrase);
